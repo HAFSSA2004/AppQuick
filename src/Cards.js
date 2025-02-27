@@ -9,8 +9,6 @@ function CardsCategories({ id, image, title, location, description, price, dateP
             <Link to={`/iteminformation/${id}`}>
     <img src={image} alt={title} className="card-img-top" />
 </Link>
-
-
             <div className="card-body">
                 <div className="title-location">
                     <h5 className="card-title">{title}</h5>

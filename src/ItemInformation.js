@@ -38,7 +38,7 @@ function ItemInformation() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', fontFamily: "'Roboto', sans-serif", backgroundColor: '#f9f9f9' }}>
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'start', gap: '10px' }}>
-                    <img src={`/${annonce.image}`} alt={annonce.title} style={{ width: '100%', maxWidth: '300px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} />
+                    <img src={`${process.env.PUBLIC_URL}/${annonce.image}`}  alt={annonce.title} style={{ width: '100%', maxWidth: '300px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} />
                 </div>
                 <div style={{ flex: '1 1 300px', maxWidth: '500px', textAlign: 'start' }}>
                     <h2 style={{ fontSize: '26px', color: '#2b2b2b', textAlign: 'center', fontWeight: 'bold' }}>{annonce.title}</h2>
