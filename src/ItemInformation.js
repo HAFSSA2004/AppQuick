@@ -53,7 +53,7 @@ function ItemInformation() {
 
                     <h4 style={{ fontSize: '20px', color: '#d79128', marginTop: '20px', marginBottom: '15px' }}>ABOUT SELLER</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                        <img src="./avatar.png" alt="Seller Avatar" style={{ width: '35px', borderRadius: '50%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} />
+                        <img  src={`${process.env.PUBLIC_URL}/avatar.png`}  alt="Seller Avatar" style={{ width: '35px', borderRadius: '50%', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }} />
                         <p style={{ fontSize: '18px', color: '#333', margin: '0' }}>Kristen Wasten</p>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
