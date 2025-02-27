@@ -8,7 +8,7 @@ import Page from "./Page";
 import InfoCards from "./InfoCards";
 function ListeCard() {
     const heroStyle = {
-        backgroundImage: `url('/back2.jpg')`, 
+        backgroundImage: `url('./back2.jpg')`, 
         /** backgroundImage: `url('/bac.png')`,  */
          /** backgroundImage: `url('/im.png')`,  */
         backgroundSize: "cover",
