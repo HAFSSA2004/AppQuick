@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Toggle from './Mode/Toggle';
 import './HeaderN.css'; // Import du fichier CSS
 import { useAuth } from "./AuthContext";
+//
 
 function HeaderN() {
   const { isAuthenticated, logout } = useAuth();
