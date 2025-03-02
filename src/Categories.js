@@ -21,7 +21,8 @@ const Categories = () => {
           {categories.map((category, index) => (
             <div key={index} className="category-item text-center mx-2">
               <Link to={category.link}>
-                <img src={category.image} alt={category.name} className="category-image" />
+                
+                <img src={`${process.env.PUBLIC_URL}/${category.image}`} className="category-image" alt={category.name}  />
               </Link>
               <div className="category-description">{category.name}</div>
             </div>

@@ -91,7 +91,7 @@ const CarPage = () => {
         {ads.map((ad) => (
           <div className="col" key={ad.id}>
             <div className="card h-100 shadow-sm">
-              <img src={ad.image} className="card-img-top" alt={ad.title} />
+              <img  src={`${process.env.PUBLIC_URL}/${ad.image}`} className="card-img-top" alt={ad.title} />
               <div className="card-body d-flex flex-column">
                 <div className="title d-flex justify-content-between align-items-center">
                   <h5 className="card-title">{ad.title}</h5>

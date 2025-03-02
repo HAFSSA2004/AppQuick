@@ -1,30 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaTrash } from "react-icons/fa";
-import { INITIAL_STATE } from "./Reducers/Filter"; // Assurez-vous que cet import est correct et que le chemin vers le fichier est valide
+import axios from "axios"; // Import d'Axios
+
+const API_URL = "http://localhost:8000/products"; // Assure-toi que c'est l'URL correcte
 
 const ManageValidation = () => {
-  // Stocker les profils dans l'état local
-  const [profiles, setProfiles] = useState(INITIAL_STATE.profils);
+  // Stocker les produits dans l'état local
+  const [products, setProducts] = useState([]);
 
-  // Fonction pour supprimer un profil
-  const handleDelete = (indexToDelete) => {
-    const updatedProfiles = profiles.filter((_, index) =>   index !== indexToDelete);
-    setProfiles(updatedProfiles);
+  // Charger les produits depuis l'API
+  useEffect(() => {
+    axios
+      .get(API_URL)
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error("Erreur lors du chargement des produits:", err));
+  }, []);
+
+  // Fonction pour supprimer un produit
+  const handleDelete = (id) => {
+    if (!window.confirm("Voulez-vous vraiment supprimer ce produit ?")) return;
+
+    axios
+      .delete(`${API_URL}/${id}`)
+      .then(() => {
+        // Mettre à jour l'état local après suppression
+        setProducts(products.filter((product) => product.id !== id));
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la suppression:", error);
+      });
   };
 
-  // Fonction pour modifier un profil
-  
   return (
     <div className="container-fluid">
-      <div className=" d-flex justify-content-center">
-        {/* Sidebar */}
+      <div className="d-flex justify-content-center">
         {/* Contenu principal */}
         <div className="col-12 col-md-9 p-4">
-          
-
           {/* Table responsive */}
-          <div className="table-responsive " style={{}}>
+          <div className="table-responsive">
             <table className="table table-bordered">
               <thead className="table-dark">
                 <tr>
@@ -34,31 +48,40 @@ const ManageValidation = () => {
                 </tr>
               </thead>
               <tbody>
-                {profiles.map((profile, index) => (
-                  <tr key={index}>
+                {products.map((product) => (
+                  <tr key={product.id}>
                     <td>
                       <div className="d-flex align-items-center">
-                        <img src={profile.image} alt="Product" className="rounded me-2" width="50" height="50" />
+                      <img
+  src={`${process.env.PUBLIC_URL}/${product.image}`} 
+  alt="Product" 
+  className="rounded me-2" 
+  width="50" 
+  height="50" 
+/>
+
                         <div>
-                          <strong>{profile.title}</strong>
+                          <strong>{product.title}</strong>
                           <br />
-                          <small>Location: {profile.location}</small>
+                          <small>Location: {product.location}</small>
                         </div>
                       </div>
                     </td>
-                    <td>{profile.price}</td>
+                    <td>{product.price} DH</td>
                     <td>
-                      
-                      <button className="btn btn-danger btn-sm text-center" onClick={() => handleDelete(index)}>
+                      <button
+                        className="btn btn-danger btn-sm text-center"
+                        onClick={() => handleDelete(product.id)}
+                      >
                         <FaTrash />
                       </button>
                     </td>
                   </tr>
                 ))}
-                {profiles.length === 0 && (
+                {products.length === 0 && (
                   <tr>
                     <td colSpan="3" className="text-center text-muted">
-                      No products available
+                      Aucun produit disponible
                     </td>
                   </tr>
                 )}

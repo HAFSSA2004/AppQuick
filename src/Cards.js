@@ -7,7 +7,9 @@ function CardsCategories({ id, image, title, location, description, price, dateP
         <div className="card">
             {/* Pass the annonce id dynamically in the Link */}
             <Link to={`/iteminformation/${id}`}>
-    <img src={image} alt={title} className="card-img-top" />
+
+    <img src={`${process.env.PUBLIC_URL}/${image}`} className='card-img-top' alt={title}  />
+
 </Link>
             <div className="card-body">
                 <div className="title-location">

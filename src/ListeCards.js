@@ -1,39 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import CardsCategories from "./Cards";
-import { useLanguage } from "./LanguageContext"; // Import Language Context
-import './List.css';
-import Categories from './Categories';
+import { useLanguage } from "./LanguageContext"; 
+import "./List.css";
+import Categories from "./Categories";
 import Page from "./Page";
 import InfoCards from "./InfoCards";
+
 function ListeCard() {
     const heroStyle = {
-        backgroundImage: `url('./back2.jpg')`, 
-        /** backgroundImage: `url('/bac.png')`,  */
-         /** backgroundImage: `url('/im.png')`,  */
+        backgroundImage: `url('${process.env.PUBLIC_URL}/back2.jpg')`,  
         backgroundSize: "cover",
         width: "100%",
         height: "410px",
-        color: "white", 
+        color: "white",
         display: "flex",
-        marginTop: "15px", 
+        marginTop: "15px",
         flexDirection: "column",
         justifyContent: "left",
         alignItems: "flex-start",
         textAlign: "start",
         backgroundPosition: "center",
-        position: "relative", // Ajout pour éviter des problèmes d'affichage
-      };
-    
-    
-    const { city, category, profils } = useSelector((state) => state);
-    const dispatch = useDispatch();
-    const { language, toggleLanguage } = useLanguage(); // Get language and toggle function
+        position: "relative",
+    };
 
-    // Define translations
+    const { city, category } = useSelector((state) => state);
+    const dispatch = useDispatch();
+    const { language, toggleLanguage } = useLanguage();
+
+    const [products, setProducts] = useState([]); // Store fetched products
+
+    useEffect(() => {
+        axios.get("http://localhost:8000/products") // Replace with your actual backend URL
+            .then((response) => {
+                setProducts(response.data); // Store fetched data in state
+            })
+            .catch((error) => {
+                console.error("Error fetching products:", error);
+            });
+    }, []);
+
     const translations = {
         en: {
-            banner: "Exclusive deals, premium finds your perfect marketplace awaits",
+            banner: "Exclusive deals, premium finds—your perfect marketplace awaits",
             filterBy: "Filter By",
             categories: {
                 electronique: "Electronics",
@@ -79,37 +89,31 @@ function ListeCard() {
         }
     };
 
-    const t = translations[language]; // Get translations for the current language
+    const t = translations[language];
 
-    // Filtering profiles based on selected city & category
-    const filteredProfiles = profils.filter((profil) => {
+    // Filter products based on selected city & category
+    const filteredProducts = products.filter((product) => {
         return (
-            (city ? profil.location?.toLowerCase() === city.toLowerCase() : true) &&
-            (category ? profil.categorie?.toLowerCase().includes(category.toLowerCase()) : true)
+            (city ? product.location?.toLowerCase() === city.toLowerCase() : true) &&
+            (category ? product.categorie?.toLowerCase().includes(category.toLowerCase()) : true)
         );
     });
 
     return (
         <div>
-            
-            {/* { <div className="banner">
-                <img src="/metting.jpg" alt="" className="banner-image" />
-                <p className="banner-text"></p>
-            </div>} */}
             <section className="hero-section" style={heroStyle}>
-      <h3 className="hero-subtitle">
-      {t.banner} </h3>
-     
-      </section>
+                <h3 className="hero-subtitle">{t.banner}</h3>
+            </section>
+
             <Page />
             <Categories />
 
             {/* Language Toggle with Flags */}
-            <div className="language-toggle" onClick={toggleLanguage} style={{ cursor: 'pointer', textAlign: 'center', margin: '10px 0' }}>
+            <div className="language-toggle" onClick={toggleLanguage} style={{ cursor: "pointer", textAlign: "center", margin: "10px 0" }}>
                 <img
-                    src={language === 'fr' ? 'france.png' : language === 'es' ? 'spain.png' : 'eng.png'}
+                    src={`${process.env.PUBLIC_URL}/${language === "fr" ? "france.png" : language === "es" ? "spain.png" : "eng.png"}`}
                     alt="Language Toggle"
-                    style={{ width: '50px', height: 'auto' }}
+                    style={{ width: "50px", height: "auto" }}
                 />
             </div>
 
@@ -122,7 +126,6 @@ function ListeCard() {
                         className="form-selectc styled-select"
                         onChange={(e) => dispatch({ type: "SET_CITY", payload: e.target.value })}
                     >
-
                         <option value="">{t.filterBy}</option>
                         <option value="Tangier">{t.cities.Tangier}</option>
                         <option value="Casablanca">{t.cities.Casablanca}</option>
@@ -138,7 +141,6 @@ function ListeCard() {
                         className="form-selectc styled-select"
                         onChange={(e) => dispatch({ type: "SET_CATEGORY", payload: e.target.value })}
                     >
-
                         <option value="">{t.filterBy}</option>
                         <option value="Electronique">{t.categories.electronique}</option>
                         <option value="skincare">{t.categories.skincare}</option>
@@ -148,22 +150,29 @@ function ListeCard() {
             </div>
 
             {/* Cards Section */}
-            <h2 className="ms-5" style={{ borderBottom: '2px solid black' ,width:'210px'}}>All Categories</h2>
+            <h2 className="ms-5" style={{ borderBottom: "2px solid black", width: "210px" }}>All Categories</h2>
 
             <div className="cards-container">
-                {filteredProfiles.map((profil, index) => (
-                    <CardsCategories
-                        key={index}
-                        id={profil.id}  // Ensure this is the correct field for the ID
-                        image={profil.image}
-                        title={profil.title}
-                        location={profil.location}
-                        description={profil.description}
-                        price={profil.price}
-                    />
-                ))}
+                {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product, index) => (
+                        <CardsCategories
+                            key={index}
+                            id={product.id} 
+                            image={product.image}
+                            title={product.title}
+                            location={product.location}
+                            description={product.description}
+                            price={product.price}
+                        />
+                    ))
+                ) : (
+                    <p style={{ textAlign: "center", marginTop: "20px", fontSize: "18px", color: "gray" }}>
+                        No products found.
+                    </p>
+                )}
             </div>
-            <InfoCards/>
+
+            <InfoCards />
         </div>
     );
 }

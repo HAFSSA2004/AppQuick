@@ -99,7 +99,8 @@ const Managea = () => {
         
         {/* Image en grand format */}
         <img
-          src="ad1.jpg"
+     
+          src={`${process.env.PUBLIC_URL}/ad1.jpg`} 
           alt="Handshake"
           className="handshake-image"
           style={{ width: "100%", height: "auto", maxWidth: "500px", marginTop: "30px" }} // Ajuster la taille de l'image

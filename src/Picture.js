@@ -1,11 +1,14 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
-import { FaUpload } from "react-icons/fa"; // Import upload icon from react-icons
-import { AdsContext } from './AdsContext'; // Import the context
+import { useNavigate } from "react-router-dom";
+import { AdsContext } from "./AdsContext";
+import { FaUpload } from "react-icons/fa";
 
 function Picture() {
-  const { ads, addAd } = useContext(AdsContext); // Get ads and addAd from context
+  const { ads, addAd } = useContext(AdsContext);
   const [uploadedImage, setUploadedImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -14,127 +17,74 @@ function Picture() {
     }
   };
 
+  const uploadToImgur = async () => {
+    if (!uploadedImage) {
+      alert("Please select an image first.");
+      return;
+    }
+  
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("image", uploadedImage);
+  
+    try {
+      const response = await fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        headers: {
+          Authorization: "Client-ID 8628f5da4573712" // Make sure your Client ID is correct
+        },
+        body: formData,
+      });
+  
+      const data = await response.json();
+      console.log("Imgur Response:", data); // Debugging
+  
+      if (response.ok) {
+        setImageUrl(data.data.link);
+        alert("Image uploaded successfully!");
+      } else {
+        alert(`Error uploading image: ${data.data.error}`);
+      }
+    } catch (error) {
+      console.error("Upload Error:", error);
+      alert("An error occurred while uploading.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const handleNext = () => {
-    const lastAd = ads[ads.length - 1]; // Get the last ad added
-    const updatedAd = { ...lastAd, image: uploadedImage }; // Update the ad with uploaded image
-    addAd(updatedAd); // Update the ad in context
+    if (!imageUrl) {
+      alert("Please upload the image before proceeding.");
+      return;
+    }
+
+    const lastAd = ads[ads.length - 1];
+    const updatedAd = { ...lastAd, image: imageUrl };
+    addAd(updatedAd);
+    navigate("/seller-info");
   };
 
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">Add ADS</h1>
+
       <div className="d-flex justify-content-center align-items-center">
-        <div
-          className="tab text-center px-4 py-2 me-2 border rounded"
-          style={{
-            width: "250px",
-            height: "60px",
-            color: "white",
-            backgroundColor: "grey",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          1. Product Info
-        </div>
-
-        <div
-          className="tab text-center px-4 py-2 bg-white text-dark me-2 border rounded shadow"
-          style={{
-            width: "250px",
-            height: "60px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          2. Product Pictures
-        </div>
-
-        <div
-          className="tab text-center px-4 py-2 border rounded"
-          style={{
-            width: "250px",
-            height: "60px",
-            color: "white",
-            backgroundColor: "grey",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          3. Seller Info
-        </div>
+        <div className="tab bg-secondary text-white px-4 py-2 me-2 border rounded">1. Product Info</div>
+        <div className="tab bg-white text-dark px-4 py-2 me-2 border rounded shadow">2. Product Pictures</div>
+        <div className="tab bg-secondary text-white px-4 py-2 border rounded">3. Seller Info</div>
       </div>
 
-      {/* Single Centered Upload Box */}
       <div className="d-flex justify-content-center mt-4">
-        <div
-          className="box bg-white rounded position-relative"
-          style={{
-            width: "280px",
-            height: "250px",
-            border: "4px dashed black",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {uploadedImage ? (
-            <img
-              src={URL.createObjectURL(uploadedImage)}
-              alt="Uploaded"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                borderRadius: "5px",
-              }}
-            />
-          ) : (
-            <label
-              htmlFor="file-upload"
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <FaUpload size={80} color="grey" />
-              <span style={{ fontSize: "25px", color: "grey",marginTop:'10px' }}>Upload</span>
-            </label>
-          )}
-          <input
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
-        </div>
+        <input type="file" onChange={handleFileChange} />
+        <button className="btn btn-primary ms-2" onClick={uploadToImgur} disabled={loading}>
+          {loading ? "Uploading..." : <FaUpload />}
+        </button>
       </div>
 
-      <form className="container" style={{ width: "71%", marginTop: "20px" }}>
-        <div className="text-center">
-          <Link
-            to="/seller-info"
-            onClick={handleNext}
-            className={`btn btn-warning ${!uploadedImage ? "disabled" : ""}`}
-            style={{
-              width: "100px",
-              color: "white",
-              marginBottom: "10px",
-              textDecoration: "none",
-              pointerEvents: uploadedImage ? "auto" : "none",
-            }}
-          >
-            Next
-          </Link>
-        </div>
-      </form>
+      <div className="text-center mt-3">
+        <button onClick={handleNext} className="btn btn-warning">Next</button>
+      </div>
     </div>
   );
 }

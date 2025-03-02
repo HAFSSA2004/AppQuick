@@ -25,9 +25,8 @@ function HeaderN() {
       <div className="container">
         {/* Logo */}
         <Link to="/" className="navbar-brand">
-          <img 
-            src="logo2.png" 
-            alt="Logo" 
+        <img src={`${process.env.PUBLIC_URL}/logo2.png`} alt="Logo" 
+
             className="navbar-logo"
             width="100"
             height="100"
