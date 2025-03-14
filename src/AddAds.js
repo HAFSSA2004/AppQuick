@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 import { FaUpload } from "react-icons/fa";
 
 function AddAds() {
-  //https://www.canva.com/templates/EAFacynVIg4/
+  //https://www.canva.com/templates/EAFacynVIg4/huz
   const { addAd } = useContext(AdsContext);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
