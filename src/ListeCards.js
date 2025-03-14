@@ -10,10 +10,10 @@ import InfoCards from "./InfoCards";
 
 function ListeCard() {
     const heroStyle = {
-        backgroundImage: `url('${process.env.PUBLIC_URL}/back2.jpg')`,  
+        backgroundImage: `url('${process.env.PUBLIC_URL}/or.png')`,  
         backgroundSize: "cover",
         width: "100%",
-        height: "410px",
+        height: "480px",
         color: "white",
         display: "flex",
         marginTop: "15px",
@@ -162,7 +162,7 @@ function ListeCard() {
                             title={product.title}
                             location={product.location}
                             description={product.description}
-                            price={product.price}
+                            price={Number(product.price)} // Convert price to a number
                         />
                     ))
                 ) : (

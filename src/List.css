@@ -6,6 +6,7 @@
 }
 .card {
     width: 100%; /* Ensure it takes full grid column */
+    background-color:#F8F8FF;
     
 }
 @media (max-width: 1024px) { /* For tablets */

@@ -36,7 +36,8 @@ function ItemInformation() {
             <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', flexWrap: 'wrap' }}>
                 <div>
       
-                    <img src={`${process.env.PUBLIC_URL}/${product.image}`} alt={product.title}  style={{ width: '100%', maxWidth: '300px', borderRadius: '10px' }} />
+                <img src={product.image} alt={product.title} style={{ width: '100%', maxWidth: '300px', borderRadius: '10px' }} />
+
 
                 </div>
                 <div style={{ maxWidth: '500px' }}>

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import './SignUp.css';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, logout, user } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -13,6 +13,7 @@ const Login = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [showDropdown, setShowDropdown] = useState(false); // To handle the visibility of the dropdown
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,7 +28,7 @@ const Login = () => {
     let newErrors = {};
     if (!formData.email) newErrors.email = "Email is required";
     if (!formData.password) newErrors.password = "Password is required";
-    if (formData.isAdmin && !formData.adminKey) newErrors.adminKey = "Admin key is required";
+    if (formData.isAdmin && !formData.adminKey) newErrors.adminKey = "Admin key is required"; // Only check if admin is true
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -35,13 +36,28 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      login();
-      if (formData.isAdmin && formData.adminKey === "123") {
-        navigate("/managea");
+      if (formData.isAdmin) {
+        if (formData.adminKey === "123") {
+          login();
+          navigate("/managea");  // Admin dashboard page
+        } else {
+          login();
+          navigate("/");  // Regular user landing page
+        }
       } else {
-        navigate("/");
+        logout();
+        setErrors({ adminKey: "Invalid admin key" });
       }
     }
+  };
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login"); // Redirect to the login page after logout
   };
 
   return (
@@ -85,6 +101,7 @@ const Login = () => {
           <label className="form-check-label" style={{ marginTop: '2px', marginLeft: '5px' }}>Login as Admin</label>
         </div>
 
+        {/* Only display the admin key input field if isAdmin is true */}
         {formData.isAdmin && (
           <div className="form-group">
             <label>Admin Key</label>
@@ -99,14 +116,28 @@ const Login = () => {
             {errors.adminKey && <small className="error-text">{errors.adminKey}</small>}
           </div>
         )}
-        <br />
-
         <button type="submit" className="btn c1">Login</button>
       </form><br />
+      
       <button type="button" className="btn-google c1">Continue with Google</button>
       <p className="login-redirect">
         Don’t have an account? <span className="login-link" onClick={() => navigate("/signup")}>Sign Up here</span>
       </p>
+
+      {/* Show dropdown for logged-in non-admin users */}
+      {user && !formData.isAdmin && (
+        <div>
+          <button onClick={toggleDropdown} className="btn-dropdown">
+            {showDropdown ? "Hide Options" : "Show Options"}
+          </button>
+          {showDropdown && (
+            <div className="dropdown-menu">
+              <button onClick={() => navigate("/clientspace")} className="dropdown-item">Client Space</button>
+              <button onClick={handleLogout} className="dropdown-item">Logout</button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -53,7 +53,7 @@ const ManageValidation = () => {
                     <td>
                       <div className="d-flex align-items-center">
                       <img
-  src={`${process.env.PUBLIC_URL}/${product.image}`} 
+  src={product.image}
   alt="Product" 
   className="rounded me-2" 
   width="50" 

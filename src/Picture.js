@@ -12,38 +12,40 @@ function Picture() {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    if (file) {
+    if (file && file.type.startsWith("image/")) {
       setUploadedImage(file);
+    } else {
+      alert("Please select a valid image file (JPG, PNG, GIF, etc.).");
     }
   };
 
-  const uploadToImgur = async () => {
+  const uploadToImgBB = async () => {
     if (!uploadedImage) {
       alert("Please select an image first.");
       return;
     }
-  
+
     setLoading(true);
-    const formData = new FormData();
-    formData.append("image", uploadedImage);
-  
+
     try {
-      const response = await fetch("https://api.imgur.com/3/image", {
-        method: "POST",
-        headers: {
-          Authorization: "Client-ID 8628f5da4573712" // Make sure your Client ID is correct
-        },
-        body: formData,
-      });
-  
+      const formData = new FormData();
+      formData.append("image", uploadedImage);
+
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=275b68f5068007b0f4aaba6bc0f9276a`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
       const data = await response.json();
-      console.log("Imgur Response:", data); // Debugging
-  
-      if (response.ok) {
-        setImageUrl(data.data.link);
+
+      if (data.success) {
+        setImageUrl(data.data.url);
         alert("Image uploaded successfully!");
       } else {
-        alert(`Error uploading image: ${data.data.error}`);
+        alert(`Error uploading image: ${data.error.message}`);
       }
     } catch (error) {
       console.error("Upload Error:", error);
@@ -52,22 +54,49 @@ function Picture() {
       setLoading(false);
     }
   };
-  
-  const handleNext = () => {
+
+  const handleNext = async () => {
     if (!imageUrl) {
-      alert("Please upload the image before proceeding.");
-      return;
+        alert("Please upload the image before proceeding.");
+        return;
+    }
+
+    if (ads.length === 0) {
+        alert("No product details found. Please fill in the form first.");
+        navigate("/add-ads"); // Redirect back
+        return;
     }
 
     const lastAd = ads[ads.length - 1];
-    const updatedAd = { ...lastAd, image: imageUrl };
-    addAd(updatedAd);
-    navigate("/seller-info");
-  };
+
+    const newAd = { ...lastAd, image: imageUrl, id: Date.now() };
+
+    try {
+        const response = await fetch("http://localhost:8000/products", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newAd),
+        });
+
+        if (response.ok) {
+            alert("Ad added successfully!");
+            addAd(newAd);
+            navigate("/seller-info");
+        } else {
+            const data = await response.json();
+            alert(`Error: ${data.error}`);
+        }
+    } catch (error) {
+        console.error("Error adding product:", error);
+        alert("An error occurred while adding the product.");
+    }
+};
+
+  
 
   return (
     <div className="container mt-4">
-      <h1 className="text-center mb-4">Add ADS</h1>
+      <h1 className="text-center mb-4">Upload Product Picture</h1>
 
       <div className="d-flex justify-content-center align-items-center">
         <div className="tab bg-secondary text-white px-4 py-2 me-2 border rounded">1. Product Info</div>
@@ -76,14 +105,20 @@ function Picture() {
       </div>
 
       <div className="d-flex justify-content-center mt-4">
-        <input type="file" onChange={handleFileChange} />
-        <button className="btn btn-primary ms-2" onClick={uploadToImgur} disabled={loading}>
+        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <button className="btn btn-primary ms-2" onClick={uploadToImgBB} disabled={loading}>
           {loading ? "Uploading..." : <FaUpload />}
         </button>
       </div>
 
+      {imageUrl && (
+        <div className="text-center mt-3">
+          <img src={imageUrl} alt="Uploaded" width="150" className="border rounded" />
+        </div>
+      )}
+
       <div className="text-center mt-3">
-        <button onClick={handleNext} className="btn btn-warning">Next</button>
+        <button className="btn btn-warning" onClick={handleNext}>Next</button>
       </div>
     </div>
   );
