@@ -5,11 +5,11 @@ function MyAdds() {
   const { ads } = useContext(AdsContext);
 
   useEffect(() => {
-    console.log('Ads Data:', ads); // Log entire ads data for inspection
+    console.log('Ads Data:', ads); // Log entire ads data for inspectionigczy
   }, [ads]);
 
   // Filter out duplicates based on a unique property like productN
-  const uniqueAds = Array.from(new Map(ads.map((ad) => [ad.productN, ad])).values());
+  const uniqueAds = Array.from(new Map(ads.map((ad) => [ad.id, ad])).values());
 
   return (
     <div className="container my-4">
